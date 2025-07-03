@@ -67,16 +67,17 @@
         
         #image-container {
             width: 100%;
-            height: 140px;
+            height: 200px;
             position: relative;
             margin-bottom: 15px;
         }
         #jumping-image {
             position: absolute;
-            width: 120px;
-            height: 120px;
-            transition: top 0.5s ease-in-out, left 0.5s ease-in-out;
-            will-change: top, left;
+            width: 180px;
+            height: 180px;
+            border-radius: 20px;
+            transition: top 0.5s ease-in-out, left 0.5s ease-in-out, transform 0.3s ease-in-out;
+            will-change: top, left, transform;
         }
     </style>
 </head>
@@ -235,15 +236,25 @@
                 const imageHeight = jumpingImage.offsetHeight;
                 const newLeft = Math.random() * (containerWidth - imageWidth);
                 const newTop = Math.random() * (containerHeight - imageHeight);
+                
+                // Add erratic scaling animation
+                const scale = 0.7 + Math.random() * 0.8; // Random scale between 0.7 and 1.5
+                const rotation = (Math.random() - 0.5) * 30; // Random rotation between -15 and 15 degrees
+                
                 jumpingImage.style.left = `${newLeft}px`;
                 jumpingImage.style.top = `${newTop}px`;
+                jumpingImage.style.transform = `scale(${scale}) rotate(${rotation}deg)`;
             };
             moveImage();
-            variousTimers.jumpInterval = setInterval(moveImage, 1500);
+            variousTimers.jumpInterval = setInterval(moveImage, 600);
         };
 
         const stopImageJumping = () => {
             clearInterval(variousTimers.jumpInterval);
+            // Reset image transform when stopping
+            if (jumpingImage) {
+                jumpingImage.style.transform = 'scale(1) rotate(0deg)';
+            }
         };
 
         const startAudio = () => {
