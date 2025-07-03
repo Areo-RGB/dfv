@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motorik-Modul Interaktive Auswertung (11 Jahre, männlich)</title>
+    <style>
+        :root {
+            --primary-bg: #f4f7f9;
+            --secondary-bg: #ffffff;
+            --header-bg: #2c3e50;
+            --text-color: #34495e;
+            --primary-color: #3498db;
+            --border-color: #dfe6e9;
+            --shadow-color: rgba(0, 0, 0, 0.08);
+            --result-bg: #e8f4fd;
+            --result-border: #d1e9fb;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: var(--secondary-bg);
+            padding: 20px 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+        }
+
+        header {
+            text-align: center;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: var(--header-bg);
+            margin: 0;
+            font-size: 2em;
+        }
+
+        h2 {
+            color: var(--header-bg);
+            border-bottom: 1px solid var(--primary-color);
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+
+        /* --- Styles for Collapsible Sections --- */
+        details {
+            margin-top: 25px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: #fdfdfd;
+        }
+
+        summary {
+            font-weight: 600;
+            font-size: 1.1em;
+            color: var(--header-bg);
+            cursor: pointer;
+            padding: 15px 20px;
+            list-style: none; /* Remove default marker */
+            display: flex;
+            align-items: center;
+        }
+
+        summary::-webkit-details-marker {
+            display: none; /* Hide default marker in Chrome/Safari */
+        }
+
+        summary::before {
+            content: '▶';
+            margin-right: 10px;
+            font-size: 0.8em;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        details[open] > summary::before {
+            transform: rotate(90deg);
+        }
+
+        details > div, details > dl {
+            padding: 0 20px 20px 40px;
+        }
+        /* --- End Collapsible Styles --- */
+
+        .legend dl {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 5px 20px;
+            margin: 0;
+        }
+
+        .legend dt {
+            font-weight: bold;
+        }
+
+        .legend dd {
+            margin-left: 0;
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .input-group {
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--secondary-bg);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .input-group:focus-within {
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+            font-size: 1.1em;
+            box-sizing: border-box;
+        }
+
+        .result-display {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: var(--result-bg);
+            border: 1px solid var(--result-border);
+            border-radius: 5px;
+            min-height: 70px;
+            font-size: 0.95em;
+            transition: opacity 0.3s ease;
+        }
+
+        .result-display span {
+            display: inline-block;
+            margin-right: 15px;
+            font-weight: 500;
+        }
+
+        .result-display strong {
+            color: var(--primary-color);
+        }
+
+        /* --- Style for Tooltips --- */
+        .tooltip-span {
+            cursor: help;
+            border-bottom: 1px dotted var(--text-color);
+        }
+
+        .controls {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        #reset-button {
+            padding: 12px 25px;
+            font-size: 1.1em;
+            font-weight: bold;
+            color: white;
+            background-color: #e74c3c;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        #reset-button:hover {
+            background-color: #c0392b;
+        }
+
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #7f8c8d;
+        }
+
+        /* --- Styles for Test Descriptions --- */
+        .test-descriptions {
+            margin-top: 0;
+            padding-top: 0;
+        }
+        .test-descriptions h3 {
+            color: var(--primary-color);
+            margin-top: 15px;
+            margin-bottom: 10px;
+        }
+        .test-descriptions ul {
+            list-style-type: none;
+            padding-left: 0;
+            margin: 0;
+        }
+        .test-descriptions li {
+            margin-bottom: 1em;
+            padding-left: 1.5em;
+            text-indent: -1.5em;
+        }
+        .test-descriptions li::before {
+            content: '◦';
+            color: var(--primary-color);
+            margin-right: 0.7em;
+            font-weight: bold;
+        }
+        .test-descriptions li strong {
+            color: var(--header-bg);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Motorik-Modul Auswertung</h1>
+            <p>Interaktive Normwerttabelle für <strong>11 Jahre, männlich</strong></p>
+        </header>
+
+        <section class="data-section">
+            <details>
+                <summary>Testbeschreibungen</summary>
+                <div>
+                    <div class="test-descriptions">
+                        <h3>Seitliches Hin- und Herspringen (SHH)</h3>
+                        <ul>
+                            <li><strong>Testziel:</strong> Diese Übung misst die ganzkörperliche Koordination unter Zeitdruck.</li>
+                            <li><strong>Testaufgabe:</strong> Die Testperson soll innerhalb von 15 Sekunden so schnell wie möglich beidbeinig seitlich über die Mittellinie einer Testmatte hin- und herspringen. Es werden 5 Probesprünge durchgeführt, gefolgt von zwei Testversuchen mit einer Minute Pause dazwischen. Die Übung wird mit Sportschuhen durchgeführt.</li>
+                            <li><strong>Messwertaufnahme:</strong> Gezählt wird die Anzahl der ausgeführten Sprünge von zwei gültigen Versuchen, wobei "hin" als 1 und "her" als 2 zählt. Ausgewertet wird der Mittelwert beider Versuche. Ungültige Sprünge sind solche, bei denen die Testperson auf die Mittellinie tritt, eine Seitenlinie übertritt oder die Sprünge nicht beidbeinig ausgeführt werden.</li>
+                        </ul>
+
+                        <h3>Liegestütz (LS)</h3>
+                        <ul>
+                            <li><strong>Testziel:</strong> Hierbei wird die dynamische Kraftausdauer der oberen Extremitäten und der stabilisierenden Rumpfmuskulatur gemessen.</li>
+                            <li><strong>Testaufgabe:</strong> Die Testperson führt innerhalb von 40 Sekunden so viele Liegestütze wie möglich durch. Die Ausgangsposition ist in Bauchlage, mit den Händen auf dem Gesäß. Von dort aus werden die Hände neben den Schultern aufgesetzt, und der Körper wird vom Boden weggedrückt, bis die Arme gestreckt und der Körper vom Boden gelöst sind. Dabei sollen nur Hände und Füße Bodenkontakt haben, und Rumpf sowie Beine gestreckt sein (Hohlkreuzhaltung vermeiden). Anschließend wird eine Hand vom Boden gelöst und berührt die andere Hand. Danach werden die Arme gebeugt, bis der Körper wieder in Bauchlage ist und die Ausgangsposition eingenommen wurde, wobei die Hände hinter dem Rücken berührt werden müssen, bevor ein neuer Liegestütz beginnt. Die Übung soll mit Sportschuhen durchgeführt werden.</li>
+                            <li><strong>Messwertaufnahme:</strong> Gezählt werden die korrekt durchgeführten Liegestütze in 40 Sekunden. Wichtige Kriterien sind, dass nur Hände und Füße den Boden berühren, eine Hand die andere Hand im Stütz abschlägt, auf dem Rücken abgeklatscht wird und Beine sowie Oberkörper gleichzeitig den Boden verlassen.</li>
+                        </ul>
+
+                        <h3>Rumpfbeugen (RB)</h3>
+                        <ul>
+                            <li><strong>Testziel:</strong> Ziel ist die Messung der Rumpfbeweglichkeit und der Dehnfähigkeit der rückwärtigen Muskulatur, der unteren Extremitäten und des langen Rückenstreckers.</li>
+                            <li><strong>Testaufgabe:</strong> Die Testperson steht auf dem Fußboden und beugt den Oberkörper langsam nach vorne, wobei die Hände möglichst weit nach unten geführt werden. Die Beine müssen dabei gestreckt bleiben. Die maximal erreichbare Dehnposition ist für zwei Sekunden zu halten. Die Testperson hat zwei Versuche, mit einer kurzen Pause zum Lockern der Beine dazwischen. Die Übung wird OHNE Sportschuhe durchgeführt.</li>
+                            <li><strong>Messwertaufnahme:</strong> Der Testleiter notiert, ob das Fußsohlenniveau erreicht wurde oder nicht. Fehlerquellen umfassen eine ruckartige Bewegung und das Nicht-Halten der Dehnposition für zwei Sekunden. Bei Kindern ab 11 Jahren kann eine Begleitperson helfen, die Streckung der Knie zu kontrollieren.</li>
+                        </ul>
+
+                        <h3>Sit-ups (nicht in dieser Normtabelle enthalten)</h3>
+                        <ul>
+                            <li><strong>Testziel:</strong> Diese Testaufgabe dient der Überprüfung der Kraftausdauer der Rumpfmuskulatur.</li>
+                            <li><strong>Testaufgabe:</strong> Die Testperson liegt auf dem Rücken, winkelt die Beine um ca. 80° an und stellt die Füße hüftbreit auf den Boden. Die Füße werden fixiert, entweder durch eine Begleitperson oder unter einem Gegenstand (z.B. Sofa). Die Fingerspitzen werden an die Schläfen und der Daumen hinter die Ohrläppchen gehalten, und diese Handhaltung darf während der Durchführung nicht verändert werden. Beim Ablegen des Oberkörpers müssen die Schulterblätter die Matte berühren. Ein Versuch ist gültig, wenn die Testperson den Oberkörper aus liegender Position aufrichtet und mit beiden Ellenbogen beide Knie berührt. Die Übung soll mit Sportschuhen durchgeführt werden. Es wird ein Durchgang von 40 Sekunden Dauer absolviert.</li>
+                            <li><strong>Messwertaufnahme:</strong> Der Testleiter zählt die in 40 Sekunden korrekt durchgeführten Sit-ups. Wichtig ist die korrekte Ausgangsposition und dass die Ellenbogen bei jedem Aufrichten die Knie berühren. Das Becken der Testperson darf den Boden während der Durchführung nicht verlassen, um Schwungholen zu vermeiden.</li>
+                        </ul>
+                    </div>
+                </div>
+            </details>
+        </section>
+
+        <section class="legend">
+            <details>
+                <summary>Legende / Abkürzungen</summary>
+                <dl>
+                    <div><dt>Q</dt><dd>Quintil</dd></div>
+                    <div><dt>PR</dt><dd>Prozentrang</dd></div>
+                    <div><dt>z, Z</dt><dd>Standardwert</dd></div>
+                    <div><dt>LK</dt><dd>Leistungsklasse</dd></div>
+                    <div><dt>M</dt><dd>Mittelwert</dd></div>
+                    <div><dt>SD</dt><dd>Standardabweichung</dd></div>
+                    <div><dt>LS</dt><dd>Liegestütz</dd></div>
+                    <div><dt>SW</dt><dd>Standweitsprung [cm]</dd></div>
+                    <div><dt>KMP</dt><dd>Kraftmessplatte</dd></div>
+                    <div><dt>SHH</dt><dd>Seitliches Hin- und Herspringen</dd></div>
+                    <div><dt>EINB</dt><dd>Einbeinstand (Fehler)</dd></div>
+                    <div><dt>BAL</dt><dd>Balancieren rückwärts (Fehler)</dd></div>
+                    <div><dt>RB</dt><dd>Rumpfbeugen [cm]</dd></div>
+                    <div><dt>REAK</dt><dd>Reaktionstest [s]</dd></div>
+                </dl>
+            </details>
+        </section>
+
+        <section class="calculator">
+            <h2>Leistungswerte eingeben</h2>
+            <p>Geben Sie einen erreichten Rohwert in das entsprechende Feld ein, um die Normwerte zu ermitteln.</p>
+            <div id="input-grid" class="input-grid">
+                <!-- Inputs will be generated by JS -->
+            </div>
+            <div class="controls">
+                <button id="reset-button">Alle Eingaben zurücksetzen</button>
+            </div>
+        </section>
+
+        <footer>
+            <p>Datenquelle: © Prof. Bös, Motorik-Modul, IfSS Universität Karlsruhe TH. Kapitel XII. Seite 394.</p>
+            <p>Interaktive Webseite erstellt zur einfachen Auswertung.</p>
+        </footer>
+    </div>
+
+<script type="module">
+    // Import all data from the external module
+    import { tests, higherIsBetter, normData, belowRange, aboveRange, lkDescriptions } from './data.js';
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const inputGrid = document.getElementById('input-grid');
+
+        // Dynamically create input fields
+        tests.forEach(test => {
+            const group = document.createElement('div');
+            group.className = 'input-group';
+
+            const label = document.createElement('label');
+            label.setAttribute('for', `input-${test.key}`);
+            label.textContent = `${test.label} ${test.unit ? `[${test.unit}]` : ''}`;
+
+            const input = document.createElement('input');
+            input.type = 'number';
+            input.id = `input-${test.key}`;
+            input.dataset.test = test.key;
+            input.step = test.key.includes('reak') || test.key.includes('kmp') ? '0.001' : 'any'; // smaller step for seconds/fine values
+
+            const resultDisplay = document.createElement('div');
+            resultDisplay.id = `result-${test.key}`;
+            resultDisplay.className = 'result-display';
+
+            group.appendChild(label);
+            group.appendChild(input);
+            group.appendChild(resultDisplay);
+            inputGrid.appendChild(group);
+
+            input.addEventListener('input', handleInputChange);
+        });
+
+        function handleInputChange(event) {
+            const input = event.target;
+            const testKey = input.dataset.test;
+            const rawValue = input.value;
+            const resultDisplay = document.getElementById(`result-${testKey}`);
+
+            if (rawValue === '' || isNaN(parseFloat(rawValue))) {
+                resultDisplay.innerHTML = '';
+                return;
+            }
+
+            const value = parseFloat(rawValue);
+            const isHigher = higherIsBetter[testKey];
+
+            let result = findNormValues(testKey, value, isHigher);
+            displayResult(resultDisplay, result);
+        }
+
+        function findNormValues(testKey, value, isHigher) {
+            let bestMatch = null;
+            const upperCaseTestKey = testKey.toUpperCase();
+
+            // Check against the lowest value in the table
+            const firstRowValue = normData[0][upperCaseTestKey];
+            if (firstRowValue !== null) {
+                if ((isHigher && value < firstRowValue) || (!isHigher && value > firstRowValue)) {
+                    return belowRange;
+                }
+            }
+
+            // Iterate through the data to find the best matching row
+            for (const row of normData) {
+                const rowValue = row[upperCaseTestKey];
+                if (rowValue === null || typeof rowValue === 'undefined') continue; // Skip rows where data is missing for this test
+
+                if (isHigher) {
+                    if (value >= rowValue) {
+                        bestMatch = row;
+                    } else {
+                        break;
+                    }
+                } else { // Lower is better
+                    if (value <= rowValue) {
+                        bestMatch = row;
+                    } else {
+                        break;
+                    }
+                }
+            }
+
+            // Check if we hit the top of the range
+            const lastRow = normData[normData.length - 1];
+            if (bestMatch && bestMatch.PR === lastRow.PR) {
+                const lastRowValue = lastRow[upperCaseTestKey];
+                 if (lastRowValue !== null && ((isHigher && value > lastRowValue) || (!isHigher && value < lastRowValue))) {
+                    return aboveRange;
+                }
+            }
+
+            return bestMatch;
+        }
+
+        function displayResult(element, result) {
+            if (!result) {
+                element.innerHTML = '<span>Kein passender Wert gefunden.</span>';
+                return;
+            }
+
+            // --- Calculate LK based on Z-Score ---
+            const findLK = (res) => {
+                if (!res || !res.Z) return 'N/A';
+
+                let zValueStr = String(res.Z).replace(',', '.');
+                if (zValueStr.startsWith('<')) return '1';
+                if (zValueStr.startsWith('>')) return '5';
+
+                let zValue = parseFloat(zValueStr);
+                if (isNaN(zValue)) return 'N/A';
+
+                if (zValue <= 91.67) return '1';
+                if (zValue <= 97.5) return '2';
+                if (zValue <= 102.5) return '3';
+                if (zValue <= 108.33) return '4';
+                return '5'; // Anything above 108.33
+            };
+
+            const lk = findLK(result);
+            const lkTooltipText = lkDescriptions[lk] || 'Leistungsklasse';
+
+            // --- Generate dynamic PR tooltip with reversed logic ---
+            let displayedPr;
+            let prTooltipText;
+            const originalPrString = String(result.PR).replace(',', '.');
+
+            if (originalPrString.startsWith('<')) { // e.g., <0.5
+                displayedPr = `>${(100 - parseFloat(originalPrString.substring(1))).toFixed(1).replace('.', ',')}`;
+                prTooltipText = `Ein Prozentrang von ${displayedPr} bedeutet, dass mehr als ${parseFloat(displayedPr.substring(1)).toFixed(1).replace('.', ',')}% der Kinder in der Referenzgruppe die gleiche oder eine bessere Leistung in diesem Test erbracht haben.`;
+            } else if (originalPrString.startsWith('>')) { // e.g., >99.5
+                displayedPr = `<${(100 - parseFloat(originalPrString.substring(1))).toFixed(1).replace('.', ',')}`;
+                prTooltipText = `Ein Prozentrang von ${displayedPr} bedeutet, dass weniger als ${parseFloat(displayedPr.substring(1)).toFixed(1).replace('.', ',')}% der Kinder in der Referenzgruppe die gleiche oder eine bessere Leistung in diesem Test erbracht haben.`;
+            } else {
+                const originalPrNumber = parseFloat(originalPrString);
+                const reversedPrNumber = 100 - originalPrNumber;
+                displayedPr = reversedPrNumber.toFixed(1).replace('.', ',');
+                prTooltipText = `Ein Prozentrang von ${displayedPr} bedeutet, dass ${displayedPr}% der Kinder in der Referenzgruppe (gleichen Alters und Geschlechts) die gleiche oder eine bessere Leistung in diesem Test erbracht haben. Im Umkehrschluss haben ${originalPrNumber.toFixed(1).replace('.', ',')}% der Referenzgruppe eine schlechtere Leistung erzielt.`;
+            }
+
+            // --- Render the final HTML ---
+            element.innerHTML = `
+                <span class="tooltip-span" title="${prTooltipText}"><strong>PR:</strong> ${displayedPr}</span>
+                <span><strong>Z-Wert:</strong> ${result.Z}</span>
+                <span class="tooltip-span" title="${lkTooltipText}"><strong>LK:</strong> ${lk}</span>
+            `;
+        }
+
+        // Reset button functionality
+        const resetButton = document.getElementById('reset-button');
+        resetButton.addEventListener('click', () => {
+            const inputs = document.querySelectorAll('.input-grid input');
+            const results = document.querySelectorAll('.result-display');
+            inputs.forEach(input => input.value = '');
+            results.forEach(result => result.innerHTML = '');
+        });
+    });
+</script>
+
+</body>
+</html>

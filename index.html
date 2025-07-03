@@ -6,7 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Reaktionstest">
-    <title>Reaktionstest (Final)</title>
+    <title>Reaktionstest (neu geschrieben)</title>
     <style>
         :root {
             --bg-color: #1a1a1a;
@@ -14,14 +14,14 @@
             --primary-color: #007bff;
             --primary-active: #0056b3;
             --red-light: #ff3b30;
-            --orange-light: #ff9500;
             --green-light: #34c759;
             --gray-light: #8e8e93;
             --white: #ffffff;
             --light-off: #4a4a4a;
             --overlay-bg: rgba(0, 0, 0, 0.75);
+            --light-bg: #3a3a3c;
+            --muted-text: #8e8e93;
         }
-
         html, body {
             height: 100%;
             width: 100%;
@@ -34,188 +34,54 @@
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
-
-        .hidden {
-            display: none !important;
-        }
-
-        #app-view {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            height: 100%;
-        }
-
-        #ampel-area {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            position: relative;
-        }
-
-        #reset-button {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 44px;
-            height: 44px;
-            background-color: rgba(255, 255, 255, 0.2);
-            border: none;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            z-index: 10;
-            -webkit-tap-highlight-color: transparent;
-        }
-        #reset-button:active {
-            background-color: rgba(255, 255, 255, 0.4);
-        }
-        #reset-button svg {
-            width: 24px;
-            height: 24px;
-            fill: var(--white);
-        }
-
-        #traffic-light-box {
-            width: 90px;
-            height: 180px;
-            background-color: #2c2c2e;
-            border-radius: 15px;
-            padding: 15px 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-around;
-            align-items: center;
-            border: 4px solid #555;
-        }
-
-        .light {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background-color: var(--light-off);
-            transition: background-color 0.2s, box-shadow 0.2s;
-        }
-
+        .hidden { display: none !important; }
+        #app-view { display: flex; flex-direction: column; width: 100%; height: 100%; }
+        #ampel-area { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; position: relative; }
+        #reset-button { position: absolute; top: 20px; right: 20px; width: 44px; height: 44px; background-color: rgba(255, 255, 255, 0.2); border: none; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 10; -webkit-tap-highlight-color: transparent; }
+        #reset-button:active { background-color: rgba(255, 255, 255, 0.4); }
+        #reset-button svg { width: 24px; height: 24px; fill: var(--white); }
+        #traffic-light-box { width: 90px; height: 180px; background-color: #2c2c2e; border-radius: 15px; padding: 15px 0; display: flex; flex-direction: column; justify-content: space-around; align-items: center; border: 4px solid #555; }
+        .light { width: 60px; height: 60px; border-radius: 50%; background-color: var(--light-off); transition: background-color 0.2s, box-shadow 0.2s; }
         .light.on.red { background-color: var(--red-light); box-shadow: 0 0 30px var(--red-light); }
-        .light.on.orange { background-color: var(--orange-light); box-shadow: 0 0 30px var(--orange-light); }
         .light.on.green { background-color: var(--green-light); box-shadow: 0 0 30px var(--green-light); }
-
-        #status-container {
-            position: absolute;
-            bottom: 20px;
-            left: 0;
-            right: 0;
-            text-align: center;
-        }
-
-        #status-text {
-            font-size: 1.3em;
-            font-weight: bold;
-            min-height: 1.5em;
-            transition: color 0.3s;
-        }
+        #status-container { position: absolute; bottom: 20px; left: 0; right: 0; text-align: center; }
+        #status-text { font-size: 1.3em; font-weight: bold; min-height: 1.5em; transition: color 0.3s; }
         #status-text.error { color: var(--red-light); }
         #status-text.info { color: var(--orange-light); }
-
-        #running-stats {
-            font-size: 1em;
-            color: var(--gray-light);
-        }
-        #running-stats span {
-            font-weight: bold;
-            color: var(--text-color);
-        }
-
-        #touch-area {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: var(--primary-color);
-            color: var(--white);
-            font-size: clamp(2rem, 10vw, 4rem);
-            font-weight: bold;
-            cursor: pointer;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-            transition: background-color 0.1s;
-        }
-        #touch-area:active {
-            background-color: var(--primary-active);
-        }
-
-        /* --- KORRIGIERTER BEREICH --- */
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
+        #running-stats { font-size: 1em; color: var(--gray-light); }
+        #running-stats span { font-weight: bold; color: var(--text-color); }
+        #touch-area { flex: 1; display: flex; justify-content: center; align-items: center; background-color: var(--primary-color); color: var(--white); font-size: clamp(2rem, 10vw, 4rem); font-weight: bold; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; transition: background-color 0.1s; }
+        #touch-area:active { background-color: var(--primary-active); }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--overlay-bg); display: flex; justify-content: center; align-items: center; padding: 0 15px; box-sizing: border-box; z-index: 100; }
+        .overlay-content { background: #2c2c2e; padding: 30px; border-radius: 12px; width: 100%; max-width: 500px; text-align: center; box-shadow: 0 5px 25px rgba(0,0,0,0.5); box-sizing: border-box; }
+        .overlay-content h1 { margin-top: 0; color: var(--primary-color); }
+        .overlay-content p { font-size: 1.1em; line-height: 1.6; }
+        .overlay-content .info-text { font-size: 1em; font-weight: normal; color: var(--gray-light); }
+        .start-button { display: inline-block; width: 100%; padding: 15px 30px; font-size: 1.2em; font-weight: bold; color: var(--white); background-color: var(--green-light); border: none; border-radius: 8px; cursor: pointer; margin-top: 20px; }
+        .start-button:active { background-color: #218838; }
+        .ranking-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; margin: 10px 0; background: var(--light-bg); border-radius: 10px; border-left: 4px solid var(--primary-color); gap: 15px; }
+        .ranking-item:first-child { border-left-color: #FFD700; }
+        .rank { font-weight: bold; font-size: 1.2em; color: var(--primary-color); min-width: 30px; text-align: left; }
+        .name { font-weight: bold; font-size: 1.1em; color: var(--text-color); flex: 1; text-align: left; }
+        .time { font-size: 1.3em; font-weight: bold; color: var(--text-color); min-width: 80px; text-align: center; }
+        
+        #image-container {
             width: 100%;
-            height: 100%;
-            background: var(--overlay-bg);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            /* Das Padding hier definiert die "sichere Zone" an den Rändern */
-            padding: 0 15px;
-            box-sizing: border-box; /* Stellt sicher, dass Padding die Gesamtgröße nicht sprengt */
-            z-index: 100;
+            height: 140px;
+            position: relative;
+            margin-bottom: 15px;
         }
-
-        .overlay-content {
-            background: #2c2c2e;
-            padding: 30px;
-            border-radius: 12px;
-            /* Nimmt 100% der verfügbaren Breite innerhalb des gepaddeten Overlays ein */
-            width: 100%; 
-            /* Wird aber nie breiter als 500px */
-            max-width: 500px; 
-            text-align: center;
-            box-shadow: 0 5px 25px rgba(0,0,0,0.5);
-            box-sizing: border-box; /* Wichtigste Korrektur: Padding ist in der Breite inbegriffen */
-        }
-        /* --- ENDE KORRIGIERTER BEREICH --- */
-
-        .overlay-content h1 {
-            margin-top: 0;
-            color: var(--primary-color);
-        }
-        .overlay-content p {
-            font-size: 1.1em;
-            line-height: 1.6;
-        }
-        .overlay-content .info-text {
-            font-size: 1em;
-            font-weight: normal;
-            color: var(--gray-light);
-        }
-
-        .start-button {
-            display: inline-block;
-            width: 100%;
-            padding: 15px 30px;
-            font-size: 1.2em;
-            font-weight: bold;
-            color: var(--white);
-            background-color: var(--green-light);
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-        .start-button:active {
-            background-color: #218838;
+        #jumping-image {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            transition: top 0.5s ease-in-out, left 0.5s ease-in-out;
+            will-change: top, left;
         }
     </style>
 </head>
 <body>
 
-    <!-- Der HTML- und JavaScript-Teil bleibt unverändert -->
     <div id="app-view" class="hidden">
         <div id="ampel-area">
             <button id="reset-button" class="hidden">
@@ -243,16 +109,9 @@
                 <div id="demo-light-red" class="light" style="width: 40px; height: 40px;"></div>
                 <div id="demo-light-green" class="light" style="width: 40px; height: 40px;"></div>
             </div>
-            <p>
-                Die Ampel wechselt von Rot auf Grün.
-                Tippe schnell auf den blauen Bereich, sobald die Ampel <strong>Grün</strong> leuchtet!
-            </p>
-            <p>
-                <strong>Wichtig:</strong> Die rote Phase dauert unterschiedlich lang - nicht raten, warte auf Grün!
-            </p>
-            <p>
-                Du hast <strong>10 Versuche</strong>.
-            </p>
+            <p>Die Ampel wechselt von Rot auf Grün. Tippe schnell auf den blauen Bereich, sobald die Ampel <strong>Grün</strong> leuchtet!</p>
+            <p><strong>Wichtig:</strong> Die rote Phase dauert unterschiedlich lang - nicht raten, warte auf Grün!</p>
+            <p>Du hast <strong>10 Versuche</strong>.</p>
             <button id="probe-button" class="start-button" style="margin-bottom: 10px;">Probe?</button>
             <button id="start-button" class="start-button">Los geht's!</button>
         </div>
@@ -261,170 +120,216 @@
     <div id="results-overlay" class="overlay hidden">
         <div class="overlay-content">
             <h1>Ergebnisse</h1>
-            <p class="info-text">Auswertung basiert auf <strong id="valid-trials-count"></strong> gültigen Versuchen (nach 4 Übungsrunden).</p>
-            <p>Durchschnitt: <strong id="avg-result" style="font-size: 1.5em;"></strong> ms</p>
-            <p>Std.-Abweichung: <strong id="stddev-result" style="font-size: 1.5em;"></strong> ms</p>
+            <p class="info-text">Auswertung basiert auf allen <strong id="valid-trials-count"></strong> gültigen Versuchen.</p>
+            <p>Durchschnitt: <strong id="avg-result" style="font-size: 1.5em;"></strong></p>
+            <p>Std.-Abweichung: <strong id="stddev-result" style="font-size: 1.5em;"></strong></p>
+            <button id="ranking-button" class="start-button" style="margin-bottom: 10px;">Rang Liste</button>
             <button id="restart-button" class="start-button">Erneut starten</button>
         </div>
     </div>
 
-    <script>
-        // DOM-Elemente
-        const appView = document.getElementById('app-view');
-        const instructionsOverlay = document.getElementById('instructions-overlay');
-        const resultsOverlay = document.getElementById('results-overlay');
-        const startButton = document.getElementById('start-button');
-        const probeButton = document.getElementById('probe-button');
-        const restartButton = document.getElementById('restart-button');
-        const lightRed = document.getElementById('light-red');
-        const lightGreen = document.getElementById('light-green');
-        const statusText = document.getElementById('status-text');
-        const lastReactionSpan = document.getElementById('last-reaction');
-        const runningAverageSpan = document.getElementById('running-average');
-        const touchArea = document.getElementById('touch-area');
-        const avgResult = document.getElementById('avg-result');
-        const stddevResult = document.getElementById('stddev-result');
-        const validTrialsCount = document.getElementById('valid-trials-count');
-        
-        const ampelArea = document.getElementById('ampel-area');
-        const resetButton = document.getElementById('reset-button');
-        const timerDisplay = document.getElementById('timer-display');
-        
-        // Demo traffic light elements
-        const demoLightRed = document.getElementById('demo-light-red');
-        const demoLightGreen = document.getElementById('demo-light-green');
+    <div id="ranking-overlay" class="overlay hidden">
+        <div class="overlay-content">
+            <div id="image-container">
+                <img id="jumping-image" src="a.webp" alt="Jumping image">
+            </div>
+            <h1>Rang Liste</h1>
+            <div id="ranking-list" style="text-align: left; margin: 20px 0;"></div>
+            <button id="back-to-results-button" class="start-button">Zurück zu Ergebnissen</button>
+        </div>
+    </div>
 
-        // Test-Parameter
+    <audio id="ranking-audio" src="c.mp3" loop></audio>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- CACHE DOM ELEMENTS ---
+        const getEl = (id) => document.getElementById(id);
+        const appView = getEl('app-view');
+        const instructionsOverlay = getEl('instructions-overlay');
+        const resultsOverlay = getEl('results-overlay');
+        const rankingOverlay = getEl('ranking-overlay');
+        const startButton = getEl('start-button');
+        const probeButton = getEl('probe-button');
+        const restartButton = getEl('restart-button');
+        const rankingButton = getEl('ranking-button');
+        const backToResultsButton = getEl('back-to-results-button');
+        const lightRed = getEl('light-red');
+        const lightGreen = getEl('light-green');
+        const statusText = getEl('status-text');
+        const lastReactionSpan = getEl('last-reaction');
+        const runningAverageSpan = getEl('running-average');
+        const touchArea = getEl('touch-area');
+        const avgResult = getEl('avg-result');
+        const stddevResult = getEl('stddev-result');
+        const validTrialsCount = getEl('valid-trials-count');
+        const resetButton = getEl('reset-button');
+        const timerDisplay = getEl('timer-display');
+        const ampelArea = getEl('ampel-area');
+        const demoLightRed = getEl('demo-light-red');
+        const demoLightGreen = getEl('demo-light-green');
+        const rankingListContainer = getEl('ranking-list');
+        const jumpingImage = getEl('jumping-image');
+        const imageContainer = getEl('image-container');
+        const rankingAudio = getEl('ranking-audio');
+
+        // --- CONSTANTS AND STATE ---
         const TOTAL_TRIALS = 10;
-        const ADAPTATION_TRIALS = 4;
         const MIN_RED_TIME = 800;
         const MAX_RED_TIME = 1600;
-        const ORANGE_TIME = 750;
         const REACTION_TIMEOUT = 1000;
         const SPECULATIVE_THRESHOLD = 150;
 
-        // Zustandsvariablen
         let allValidReactionTimes = [];
         let trialCounter = 0;
         let startTime;
-        let redToOrangeTimer, orangeToGreenTimer, reactionTimeoutTimer;
         let testState = 'idle';
-        let resetButtonTimer;
         let isProbeMode = false;
-        let demoAnimationTimer;
-        let timerUpdateInterval;
-        let trialStartTime;
+        let variousTimers = {};
 
-        // Event Listener
-        startButton.addEventListener('click', startTest);
-        probeButton.addEventListener('click', startProbe);
-        restartButton.addEventListener('click', restartTest);
-        touchArea.addEventListener('click', handleReaction);
-        
-        ampelArea.addEventListener('click', showResetButton);
-        resetButton.addEventListener('click', performReset);
+        // --- CORE LOGIC FUNCTIONS ---
+        const calculateAverage = (arr) => arr.length === 0 ? 0 : arr.reduce((a, b) => a + b, 0) / arr.length;
+        const calculateStdDev = (arr) => {
+            if (arr.length < 2) return 0;
+            const mean = calculateAverage(arr);
+            const variance = arr.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / (arr.length - 1);
+            return Math.sqrt(variance);
+        };
+        const clearAllTimers = () => Object.values(variousTimers).forEach(timer => { clearTimeout(timer); clearInterval(timer); });
 
-        function clearAllTimers() {
-            clearTimeout(redToOrangeTimer);
-            clearTimeout(orangeToGreenTimer);
-            clearTimeout(reactionTimeoutTimer);
-            clearTimeout(demoAnimationTimer);
-            clearInterval(timerUpdateInterval);
-        }
-
-        function startTimer() {
-            trialStartTime = performance.now();
-            timerUpdateInterval = setInterval(() => {
-                const elapsed = performance.now() - trialStartTime;
-                timerDisplay.textContent = `${elapsed.toFixed(0)} ms`;
-            }, 10); // Update every 10ms for smooth display
-        }
-
-        function stopTimer() {
-            clearInterval(timerUpdateInterval);
-        }
-
-        function resetTimer() {
-            timerDisplay.textContent = '--';
-        }
-
-        function setDemoLights(red, green) {
-            demoLightRed.classList.toggle('on', red);
-            demoLightGreen.classList.toggle('on', green);
-        }
-
-        function startDemoAnimation() {
-            // Start demo animation cycle
-            function demoSequence() {
-                // Red light with random delay like in the actual test
-                setDemoLights(true, false);
-                const randomRedDelay = Math.random() * (MAX_RED_TIME - MIN_RED_TIME) + MIN_RED_TIME;
-                demoAnimationTimer = setTimeout(() => {
-                    // Green light directly
-                    setDemoLights(false, true);
-                    demoAnimationTimer = setTimeout(() => {
-                        // All off, then restart
-                        setDemoLights(false, false);
-                        demoAnimationTimer = setTimeout(demoSequence, 500);
-                    }, 1000);
-                }, randomRedDelay);
-            }
-            demoSequence();
-        }
-
-        function stopDemoAnimation() {
-            clearTimeout(demoAnimationTimer);
-            setDemoLights(false, false);
-        }
-
-        function setLights(red, green) {
+        const setLights = (red, green) => {
             lightRed.classList.toggle('on', red);
             lightGreen.classList.toggle('on', green);
-        }
-
-        function resetState() {
+        };
+        
+        const resetState = () => {
             allValidReactionTimes = [];
             trialCounter = 0;
+            stopImageJumping();
+            stopAudio();
             clearAllTimers();
             lastReactionSpan.textContent = '--';
             runningAverageSpan.textContent = '--';
-            resetTimer();
-        }
-
-        function startTest() {
+            timerDisplay.textContent = '--';
             isProbeMode = false;
+        };
+        
+        const updateStatus = (text, type = '') => {
+            statusText.textContent = text;
+            statusText.className = `status-text ${type}`;
+        };
+
+        // --- OVERLAY AND VIEW MANAGEMENT ---
+        const showView = (view) => {
+            [appView, instructionsOverlay, resultsOverlay, rankingOverlay].forEach(v => v.classList.add('hidden'));
+            if (view) view.classList.remove('hidden');
+        };
+
+        // --- MEDIA CONTROL LOGIC ---
+        const startImageJumping = () => {
+            const moveImage = () => {
+                if (!jumpingImage || !imageContainer) return;
+                const containerWidth = imageContainer.offsetWidth;
+                const containerHeight = imageContainer.offsetHeight;
+                const imageWidth = jumpingImage.offsetWidth;
+                const imageHeight = jumpingImage.offsetHeight;
+                const newLeft = Math.random() * (containerWidth - imageWidth);
+                const newTop = Math.random() * (containerHeight - imageHeight);
+                jumpingImage.style.left = `${newLeft}px`;
+                jumpingImage.style.top = `${newTop}px`;
+            };
+            moveImage();
+            variousTimers.jumpInterval = setInterval(moveImage, 1500);
+        };
+
+        const stopImageJumping = () => {
+            clearInterval(variousTimers.jumpInterval);
+        };
+
+        const startAudio = () => {
+            if (rankingAudio) {
+                rankingAudio.play().catch(error => console.error("Audio playback error:", error));
+            }
+        };
+
+        const stopAudio = () => {
+            if (rankingAudio) {
+                rankingAudio.pause();
+                rankingAudio.currentTime = 0;
+            }
+        };
+
+        // --- RANKING LIST FUNCTION ---
+        const showRankingList = () => {
+            rankingListContainer.innerHTML = '';
+            let rankings = [];
+            
+            if (allValidReactionTimes.length > 0) {
+                const bentTime = calculateAverage(allValidReactionTimes);
+                const maxAlexTime = bentTime * 0.75;
+                rankings.push({ name: 'Bent', time: bentTime });
+                rankings.push({ name: 'Max & Alex', time: maxAlexTime });
+                rankings.sort((a, b) => a.time - b.time);
+            }
+
+            if (rankings.length > 0) {
+                rankings.forEach((entry, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'ranking-item';
+                    const rank = document.createElement('span');
+                    rank.className = 'rank';
+                    rank.textContent = `${index + 1}.`;
+                    const name = document.createElement('span');
+                    name.className = 'name';
+                    name.textContent = entry.name;
+                    const time = document.createElement('span');
+                    time.className = 'time';
+                    time.textContent = `${entry.time.toFixed(0)}ms`;
+                    item.appendChild(rank);
+                    item.appendChild(name);
+                    item.appendChild(time);
+                    rankingListContainer.appendChild(item);
+                });
+            } else {
+                rankingListContainer.innerHTML = '<p class="info-text">Spiele eine Runde, um die Rangliste zu füllen.</p>';
+            }
+
+            startImageJumping();
+            startAudio();
+            showView(rankingOverlay);
+        };
+
+        // --- TEST FLOW ---
+        const startTest = (probe = false) => {
+            isProbeMode = probe;
             stopDemoAnimation();
             resetState();
-            instructionsOverlay.classList.add('hidden');
-            appView.classList.remove('hidden');
+            showView(appView);
             nextTrial();
-        }
+        };
 
-        function startProbe() {
-            isProbeMode = true;
-            stopDemoAnimation();
-            resetState();
-            instructionsOverlay.classList.add('hidden');
-            appView.classList.remove('hidden');
-            nextTrial();
-        }
+        const restartTest = () => startTest();
 
-        function restartTest() {
-            resetState();
-            resultsOverlay.classList.add('hidden');
-            appView.classList.remove('hidden');
-            nextTrial();
-        }
+        const endTest = () => {
+            validTrialsCount.textContent = allValidReactionTimes.length;
+            if (allValidReactionTimes.length > 0) {
+                const avg = calculateAverage(allValidReactionTimes);
+                const stdDev = calculateStdDev(allValidReactionTimes);
+                avgResult.textContent = `${avg.toFixed(2)} ms`;
+                stddevResult.textContent = `${stdDev.toFixed(2)} ms`;
+            } else {
+                avgResult.textContent = 'fail.';
+                stddevResult.textContent = 'fail.';
+            }
+            showView(resultsOverlay);
+        };
 
-        function nextTrial() {
+        const nextTrial = () => {
             const maxTrials = isProbeMode ? 1 : TOTAL_TRIALS;
             if (trialCounter >= maxTrials) {
                 if (isProbeMode) {
-                    // After probe, return to instructions
-                    appView.classList.add('hidden');
-                    instructionsOverlay.classList.remove('hidden');
+                    showView(instructionsOverlay);
                     startDemoAnimation();
-                    isProbeMode = false;
                 } else {
                     endTest();
                 }
@@ -434,119 +339,108 @@
             
             testState = 'red';
             setLights(true, false);
-            if (isProbeMode) {
-                statusText.textContent = "Probe - bereit?";
-            } else {
-                statusText.textContent = `Versuch ${trialCounter} von ${TOTAL_TRIALS}`;
-            }
-            statusText.className = 'status-text';
-
-            resetTimer(); // Reset timer display to "--"
+            updateStatus(isProbeMode ? "Probe - bereit?" : `Versuch ${trialCounter} von ${TOTAL_TRIALS}`);
+            timerDisplay.textContent = '--';
+            
             const randomRedDelay = Math.random() * (MAX_RED_TIME - MIN_RED_TIME) + MIN_RED_TIME;
-            redToOrangeTimer = setTimeout(changeToGreen, randomRedDelay);
-        }
+            variousTimers.greenLight = setTimeout(changeToGreen, randomRedDelay);
+        };
 
-        function changeToGreen() {
+        const changeToGreen = () => {
             testState = 'green';
             setLights(false, true);
             startTime = performance.now();
-            startTimer(); // Start the visible timer when green light appears
-            reactionTimeoutTimer = setTimeout(handleTooSlow, REACTION_TIMEOUT);
-        }
+            variousTimers.timeout = setTimeout(handleTooSlow, REACTION_TIMEOUT);
+        };
+        
+        const pauseAndContinue = () => {
+            testState = 'paused';
+            variousTimers.next = setTimeout(nextTrial, 1500);
+        };
 
-        function handleReaction() {
+        // --- USER INTERACTION HANDLERS ---
+        const handleReaction = () => {
             if (testState === 'green') {
                 const reactionTime = performance.now() - startTime;
                 clearAllTimers();
-                stopTimer();
-
+                
                 if (reactionTime < SPECULATIVE_THRESHOLD) {
-                    handleInvalidTrial("Zu schnell!", "info");
+                    updateStatus("Zu schnell!", "info");
                 } else {
                     allValidReactionTimes.push(reactionTime);
                     lastReactionSpan.textContent = `${reactionTime.toFixed(0)} ms`;
                     runningAverageSpan.textContent = `${calculateAverage(allValidReactionTimes).toFixed(0)} ms`;
-                    pauseAndContinue();
                 }
+                
+                pauseAndContinue();
+
             } else if (testState === 'red') {
-                handleInvalidTrial("Zu früh!", "error");
+                clearAllTimers();
+                updateStatus("Zu früh!", "error");
+                pauseAndContinue();
             }
-        }
+        };
 
-        function handleTooSlow() {
+        const handleTooSlow = () => {
             clearAllTimers();
-            stopTimer();
-            testState = 'paused';
-            statusText.textContent = "Zu langsam!";
-            statusText.className = 'status-text error';
+            updateStatus("Zu langsam!", "error");
             pauseAndContinue();
-        }
-
-        function handleInvalidTrial(message, messageType) {
-            clearAllTimers();
-            stopTimer();
-            testState = 'paused';
-            // Don't decrement trialCounter - invalid trials should still count as attempts
-            statusText.textContent = message;
-            statusText.className = `status-text ${messageType}`;
-            pauseAndContinue();
-        }
-
-        function pauseAndContinue() {
-            testState = 'paused';
-            setTimeout(nextTrial, 1500);
-        }
-
-        function endTest() {
-            appView.classList.add('hidden');
-            resultsOverlay.classList.remove('hidden');
-            
-            const evaluationTimes = allValidReactionTimes.slice(ADAPTATION_TRIALS);
-            
-            validTrialsCount.textContent = evaluationTimes.length;
-            const avg = calculateAverage(evaluationTimes);
-            const stdDev = calculateStdDev(evaluationTimes);
-
-            avgResult.textContent = avg.toFixed(2);
-            stddevResult.textContent = stdDev.toFixed(2);
-        }
-
-        function showResetButton() {
-            resetButton.classList.remove('hidden');
-            clearTimeout(resetButtonTimer);
-            resetButtonTimer = setTimeout(() => {
-                resetButton.classList.add('hidden');
-            }, 3000);
-        }
-
-        function performReset(event) {
+        };
+        
+        const performReset = (event) => {
             event.stopPropagation();
-            clearAllTimers();
-            clearTimeout(resetButtonTimer);
             resetState();
-            
-            appView.classList.add('hidden');
-            resultsOverlay.classList.add('hidden');
-            instructionsOverlay.classList.remove('hidden');
+            showView(instructionsOverlay);
             startDemoAnimation();
             resetButton.classList.add('hidden');
-        }
+        };
 
-        function calculateAverage(arr) {
-            if (arr.length === 0) return 0;
-            return arr.reduce((a, b) => a + b, 0) / arr.length;
-        }
+        // --- DEMO ANIMATION ---
+        const setDemoLights = (red, green) => {
+            demoLightRed.classList.toggle('on', red);
+            demoLightGreen.classList.toggle('on', green);
+        };
+        const stopDemoAnimation = () => {
+            clearAllTimers();
+            setDemoLights(false, false);
+        };
+        const startDemoAnimation = () => {
+            const demoSequence = () => {
+                setDemoLights(true, false);
+                const randomDelay = Math.random() * (MAX_RED_TIME - MIN_RED_TIME) + MIN_RED_TIME;
+                variousTimers.demo = setTimeout(() => {
+                    setDemoLights(false, true);
+                    variousTimers.demo2 = setTimeout(() => {
+                        setDemoLights(false, false);
+                        variousTimers.demo3 = setTimeout(demoSequence, 500);
+                    }, 1000);
+                }, randomDelay);
+            };
+            demoSequence();
+        };
 
-        function calculateStdDev(arr) {
-            if (arr.length < 2) return 0;
-            const n = arr.length;
-            const mean = calculateAverage(arr);
-            const variance = arr.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / (n - 1);
-            return Math.sqrt(variance);
-        }
+        // --- EVENT LISTENERS ---
+        startButton.addEventListener('click', () => startTest(false));
+        probeButton.addEventListener('click', () => startTest(true));
+        restartButton.addEventListener('click', restartTest);
+        rankingButton.addEventListener('click', showRankingList);
+        backToResultsButton.addEventListener('click', () => {
+            stopImageJumping();
+            stopAudio();
+            showView(resultsOverlay);
+        });
+        touchArea.addEventListener('click', handleReaction);
+        resetButton.addEventListener('click', performReset);
+        ampelArea.addEventListener('click', () => {
+            resetButton.classList.remove('hidden');
+            clearTimeout(variousTimers.resetButton);
+            variousTimers.resetButton = setTimeout(() => resetButton.classList.add('hidden'), 3000);
+        });
 
-        // Start demo animation when page loads
+        // --- INITIALIZE APP ---
+        showView(instructionsOverlay);
         startDemoAnimation();
+    });
     </script>
 
 </body>
