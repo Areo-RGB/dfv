@@ -40,6 +40,7 @@
         #reset-button { position: absolute; top: 20px; right: 20px; width: 44px; height: 44px; background-color: rgba(255, 255, 255, 0.2); border: none; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 10; -webkit-tap-highlight-color: transparent; }
         #reset-button:active { background-color: rgba(255, 255, 255, 0.4); }
         #reset-button svg { width: 24px; height: 24px; fill: var(--white); }
+        #timer-display { font-size: 2em; font-weight: bold; color: var(--text-color); margin-bottom: 20px; min-height: 1.2em; will-change: contents; }
         #traffic-light-box { width: 90px; height: 180px; background-color: #2c2c2e; border-radius: 15px; padding: 15px 0; display: flex; flex-direction: column; justify-content: space-around; align-items: center; border: 4px solid #555; }
         .light { width: 60px; height: 60px; border-radius: 50%; background-color: var(--light-off); transition: background-color 0.2s, box-shadow 0.2s; }
         .light.on.red { background-color: var(--red-light); box-shadow: 0 0 30px var(--red-light); }
@@ -76,8 +77,12 @@
             width: 180px;
             height: 180px;
             border-radius: 20px;
-            transition: top 0.5s ease-in-out, left 0.5s ease-in-out, transform 0.3s ease-in-out;
-            will-change: top, left, transform;
+            opacity: 0;
+            transition: top 0.5s ease-in-out, left 0.5s ease-in-out, transform 0.3s ease-in-out, opacity 2s ease-in-out;
+            will-change: top, left, transform, opacity;
+        }
+        #jumping-image.fade-in {
+            opacity: 1;
         }
     </style>
 </head>
@@ -137,6 +142,7 @@
             <h1>Rang Liste</h1>
             <div id="ranking-list" style="text-align: left; margin: 20px 0;"></div>
             <button id="back-to-results-button" class="start-button">Zurück zu Ergebnissen</button>
+            <button id="try-again-button" class="start-button">Nochmal versuchen?</button>
         </div>
     </div>
 
@@ -155,6 +161,7 @@
         const restartButton = getEl('restart-button');
         const rankingButton = getEl('ranking-button');
         const backToResultsButton = getEl('back-to-results-button');
+        const tryAgainButton = getEl('try-again-button');
         const lightRed = getEl('light-red');
         const lightGreen = getEl('light-green');
         const statusText = getEl('status-text');
@@ -225,9 +232,21 @@
             [appView, instructionsOverlay, resultsOverlay, rankingOverlay].forEach(v => v.classList.add('hidden'));
             if (view) view.classList.remove('hidden');
         };
+        
+        const startVisualTimer = () => {
+            variousTimers.visualTimer = setInterval(() => {
+                const elapsed = performance.now() - startTime;
+                timerDisplay.textContent = `${elapsed.toFixed(0)} ms`;
+            }, 10);
+        };
 
         // --- MEDIA CONTROL LOGIC ---
         const startImageJumping = () => {
+            // Start fade-in animation
+            if (jumpingImage) {
+                jumpingImage.classList.add('fade-in');
+            }
+            
             const moveImage = () => {
                 if (!jumpingImage || !imageContainer) return;
                 const containerWidth = imageContainer.offsetWidth;
@@ -251,9 +270,10 @@
 
         const stopImageJumping = () => {
             clearInterval(variousTimers.jumpInterval);
-            // Reset image transform when stopping
+            // Reset image transform and fade-out when stopping
             if (jumpingImage) {
                 jumpingImage.style.transform = 'scale(1) rotate(0deg)';
+                jumpingImage.classList.remove('fade-in');
             }
         };
 
@@ -361,6 +381,7 @@
             testState = 'green';
             setLights(false, true);
             startTime = performance.now();
+            startVisualTimer();
             variousTimers.timeout = setTimeout(handleTooSlow, REACTION_TIMEOUT);
         };
         
@@ -370,10 +391,16 @@
         };
 
         // --- USER INTERACTION HANDLERS ---
-        const handleReaction = () => {
+        const handleReaction = (event) => {
+            // Prevent default actions like zoom on double-tap
+            event.preventDefault();
+
             if (testState === 'green') {
                 const reactionTime = performance.now() - startTime;
                 clearAllTimers();
+                
+                // Provide immediate feedback by updating the timer with the final value
+                timerDisplay.textContent = `${reactionTime.toFixed(0)} ms`;
                 
                 if (reactionTime < SPECULATIVE_THRESHOLD) {
                     updateStatus("Zu schnell!", "info");
@@ -440,7 +467,16 @@
             stopAudio();
             showView(resultsOverlay);
         });
+        tryAgainButton.addEventListener('click', () => {
+            stopImageJumping();
+            stopAudio();
+            startTest(false);
+        });
+        // Use 'touchstart' for maximum responsiveness on touch devices
+        touchArea.addEventListener('touchstart', handleReaction, { passive: false });
+        // Add a click listener as a fallback for non-touch devices
         touchArea.addEventListener('click', handleReaction);
+
         resetButton.addEventListener('click', performReset);
         ampelArea.addEventListener('click', () => {
             resetButton.classList.remove('hidden');
